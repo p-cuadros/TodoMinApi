@@ -1,4 +1,4 @@
-name: CI Build and test
+name: CI-CD Heroku
 
 on:
   push:
