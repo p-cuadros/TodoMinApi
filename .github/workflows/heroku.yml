@@ -3,7 +3,7 @@ name: CI-CD Heroku
 on:
   push:
     branches:
-      - branch-sqllite
+      - branch-sqllite-dapper
 
 #set environment variables 
 env:

@@ -1,12 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using TodoMinApi.Domain;
+// using Microsoft.EntityFrameworkCore;
+// using TodoMinApi.Domain;
 
-namespace TodoMinApi.Data
-{
-    public class ApiDbContext : DbContext
-    {
-        public virtual DbSet<Item> Items {get;set;}
+// namespace TodoMinApi.Data
+// {
+//     public class ApiDbContext : DbContext
+//     {
+//         public virtual DbSet<Item> Items {get;set;}
 
-        public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options){ }        
-    }
-}
+//         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options){ }        
+//     }
+// }
