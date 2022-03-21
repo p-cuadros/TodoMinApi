@@ -2,50 +2,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoMinApi.Data;
 using TodoMinApi.Domain;
-
+var cn = Environment.GetEnvironmentVariable("DYNO");
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddSingleton<ItemRepository>();
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApiDbContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddDbContext<ApiDbContext>(options => options.UseNpgsql(GetHerokuConnectionString("DATABASE_URL")));
 var app = builder.Build();
 app.UseSwagger();
 
 app.MapGet("/", () => "Hello World!");
-
-// app.MapGet("/items", ([FromServices] ItemRepository items) =>
-// {
-//     return items.GetAll();
-// });
-
-// app.MapGet("/items/{id}", ([FromServices] ItemRepository items, int id) =>
-// {
-//     var result = items.GetById(id);
-//     return result != null ? Results.Ok(result) :  Results.NotFound();
-// });
-
-// app.MapPost("/items", ([FromServices] ItemRepository items, Item item) =>
-// {
-//     items.Add(item);
-//     return Results.Created($"/items/{item.Id}",item);
-// });
-
-// app.MapPut("/items/{id}", ([FromServices] ItemRepository items, int id, Item item) =>
-// {
-//     if (items.GetById(id) == null)
-//         return Results.NotFound();
-//     items.Update(item);
-//     return Results.Ok(item);
-// });
-
-// app.MapDelete("/items/{id}", ([FromServices] ItemRepository items, int id) =>
-// {
-//     if (items.GetById(id) == null)
-//         return Results.NotFound();
-//     items.Delete(id);
-//     return Results.NoContent();
-// });
 
 app.MapGet("/items", async (ApiDbContext db) =>
     await db.Items.ToListAsync());
@@ -90,3 +55,13 @@ app.MapDelete("/items/{id}", async (int id, ApiDbContext db) =>
 
 app.UseSwaggerUI();
 app.Run();
+
+
+string GetHerokuConnectionString(string connectionString)
+{
+    string connectionUrl = Environment.GetEnvironmentVariable(connectionString);
+    var databaseUri = new Uri(connectionUrl);
+    string db = databaseUri.LocalPath.TrimStart('/');
+    string[] userInfo = databaseUri.UserInfo.Split(':', StringSplitOptions.RemoveEmptyEntries);
+    return $"User ID={userInfo[0]};Password={userInfo[1]};Host={databaseUri.Host};Port={databaseUri.Port};Database={db};Pooling=true;SSL Mode=Require;Trust Server Certificate=True;";
+}

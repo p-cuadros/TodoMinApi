@@ -3,7 +3,7 @@ name: CI-CD Heroku
 on:
   push:
     branches:
-      - branch-sqllite
+      - branch-heroku-db-postgres
 
 #set environment variables 
 env:
@@ -26,5 +26,5 @@ jobs:
       # Push the Docker image to Heroku Container Registry
       - name: Publish
         run: |
-          heroku container:push web -a $APP_NAME
+          heroku container:push web -a $APP_NAME --arg DATABASE_URL=${{ secrets.DATABASE_URL }}
           heroku container:release web -a $APP_NAME
